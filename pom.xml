@@ -1,0 +1,131 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.shyrkaio.test</groupId>
+    <artifactId>foo-sample</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
+        <io-javaoperatorsdk.version>1.9.6</io-javaoperatorsdk.version>
+        <io-fabric8.version>5.7.3</io-fabric8.version>
+        <io-fabric8-crd-generator.version>5.1.1</io-fabric8-crd-generator.version>
+        <jackson.version>2.11.2</jackson.version>
+        <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
+        <jib-maven-image>shyrkaio/${project.artifactId}:${project.version}</jib-maven-image>
+        <jkube-kubernetes-maven-plugin.version>1.4.0</jkube-kubernetes-maven-plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.javaoperatorsdk</groupId>
+            <artifactId>operator-framework</artifactId>
+            <version>${io-javaoperatorsdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.takes</groupId>
+            <artifactId>takes</artifactId>
+            <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>crd-generator</artifactId>
+            <version>${io-fabric8-crd-generator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>crd-generator-api</artifactId>
+            <version>${io-fabric8.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>crd-generator-apt</artifactId>
+            <version>${io-fabric8.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>${io-fabric8.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-server-mock</artifactId>
+            <!-- @todo retreive the version from the io-javaoperatorsdk dependency -->
+            <version>${io-fabric8.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install jib:build k8s:apply k8s:helm</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <from>
+                        <image>gcr.io/distroless/java:11</image>
+                    </from>
+                    <to>
+                        <image>myothercrd-operator</image>
+                    </to>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>kubernetes-maven-plugin</artifactId>
+                <version>${jkube-kubernetes-maven-plugin.version}</version>
+                <configuration>
+                    <!-- https://github.com/eclipse/jkube/issues/657 -->
+                    <mergeWithDekorate>true</mergeWithDekorate>
+                    <buildStrategy>jib</buildStrategy>
+                    <skipBuild>true</skipBuild><!-- leave this to Jib plugin -->
+                    <resources>
+                        <customResourceDefinitions>
+                        <customResourceDefinition>myothercrd.io.github.shyrkaio.test</customResourceDefinition>
+                        </customResourceDefinitions>
+                        <serviceAccount>${project.artifactId}</serviceAccount>
+                        <controllerName>${project.artifactId}</controllerName>
+                        <imagePullPolicy>IfNotPresent</imagePullPolicy>
+                        <replicas>3</replicas>
+                        <liveness>
+                            <getUrl>http://:8080/health</getUrl>
+                            <tcpPort>8080</tcpPort>
+                            <initialDelaySeconds>3</initialDelaySeconds>
+                            <timeoutSeconds>3</timeoutSeconds>
+                        </liveness>
+                    </resources>
+                    <images>
+                        <image>
+                            <name>${jib-maven-image}</name>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

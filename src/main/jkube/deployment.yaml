@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    io.shyrka.erebus/archetype-name: "foo-sample"
+    io.shyrka.erebus/archetype-version: "0.1-SNAPSHOT"
+spec:
+  selector:
+    matchLabels:
+      app: myothercrd-operator
+  template:
+    metadata:
+      labels:
+        app: myothercrd-operator
+    spec:
+      containers:
+      - name: myothercrd-operator
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
