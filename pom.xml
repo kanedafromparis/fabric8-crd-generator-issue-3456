@@ -62,7 +62,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>${io-fabric8.version}</version>
+            <version>5.2.0</version>
         </dependency>
 
         <dependency>
