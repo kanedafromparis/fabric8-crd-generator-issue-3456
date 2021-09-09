@@ -15,7 +15,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
         <io-javaoperatorsdk.version>1.9.6</io-javaoperatorsdk.version>
-        <io-fabric8.version>5.7.3</io-fabric8.version>
+        <io-fabric8.version>5.7.2</io-fabric8.version>
         <io-fabric8-crd-generator.version>5.1.1</io-fabric8-crd-generator.version>
         <jackson.version>2.11.2</jackson.version>
         <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
@@ -46,11 +46,6 @@
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
-            <artifactId>crd-generator</artifactId>
-            <version>${io-fabric8-crd-generator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.fabric8</groupId>
             <artifactId>crd-generator-api</artifactId>
             <version>${io-fabric8.version}</version>
         </dependency>
@@ -62,7 +57,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>5.2.0</version>
+            <version>${io-fabric8.version}</version>
         </dependency>
 
         <dependency>
